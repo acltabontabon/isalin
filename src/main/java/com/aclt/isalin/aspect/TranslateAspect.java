@@ -1,13 +1,10 @@
 package com.aclt.isalin.aspect;
 
-import com.aclt.isalin.Language;
 import com.aclt.isalin.annotation.Translate;
-import com.aclt.isalin.model.TranslateRequest;
-import com.aclt.isalin.model.TranslateResponse;
-import com.aclt.isalin.properties.IsalinProperties;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.aclt.isalin.service.IsalinService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -20,46 +17,50 @@ import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.Objects;
-import java.util.Optional;
 
+@Slf4j
 @Aspect
 @RequiredArgsConstructor
 public class TranslateAspect {
 
-    public static final String TARGET_REF_KEY = "$.";
+    private static final String TARGET_REF_KEY = "$.";
 
-    private final IsalinProperties isalinProperties;
+    private final IsalinService isalinService;
 
     private final ExpressionParser expressionParser = new SpelExpressionParser();
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final HttpClient httpClient = HttpClient.newHttpClient();
+
 
     @SneakyThrows
     @Around("@annotation(com.aclt.isalin.annotation.Translate)")
     public Object aroundTranslate(ProceedingJoinPoint joinPoint) {
         Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
-        Translate annotation = method.getAnnotation(Translate.class);
-
         Object joinPointResult = joinPoint.proceed();
 
-        if (StringUtils.hasText(annotation.value())) {
-            String fieldMapping = annotation.value().replace(TARGET_REF_KEY, "");
-
-            EvaluationContext context = new StandardEvaluationContext(joinPointResult);
-            String val = Objects.requireNonNull(expressionParser.parseExpression(fieldMapping).getValue(context)).toString();
-            String translatedValue = callTranslationService(createPayload(val, annotation.from(), annotation.to()));
-
-            assignTranslation(joinPointResult, fieldMapping, translatedValue);
-
+        if (method.getReturnType().equals(Void.TYPE)) {
             return joinPointResult;
         }
 
-        return callTranslationService(createPayload(joinPointResult.toString(), annotation.from(), annotation.to()));
+        return translate(joinPointResult, method.getAnnotation(Translate.class));
+    }
+
+    private Object translate(Object joinPointResult, Translate annotation) {
+        try {
+            if (StringUtils.hasText(annotation.value())) {
+                String fieldMapping = annotation.value().replace(TARGET_REF_KEY, "");
+
+                EvaluationContext context = new StandardEvaluationContext(joinPointResult);
+                String rawValue = expressionParser.parseExpression(fieldMapping).getValue(context).toString();
+                String translatedValue = isalinService.translate(rawValue, annotation.from(), annotation.to());
+
+                assignTranslation(joinPointResult, fieldMapping, translatedValue);
+
+                return joinPointResult;
+            }
+
+            return isalinService.translate(joinPointResult.toString(), annotation.from(), annotation.to());
+        } catch (Exception ex) {
+            return joinPointResult;
+        }
     }
 
     /**
@@ -92,42 +93,5 @@ public class TranslateAspect {
         targetField.setAccessible(true);
 
         assignTranslation(targetField.get(targetObj), child, valueToAssign);
-    }
-
-    @SneakyThrows
-    private String callTranslationService(String payload) {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(createUrl())
-                .header("Content-Type", "application/json; charset=utf-8")
-                .POST(HttpRequest.BodyPublishers.ofString(payload))
-                .build();
-
-        HttpResponse<String> httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-        Optional<TranslateResponse.Translation> translation = objectMapper
-                .readValue(httpResponse.body(), TranslateResponse.class)
-                .getData()
-                .getTranslations()
-                .stream()
-                .findAny();
-
-        if (translation.isPresent()) {
-            return translation.get().getTranslatedText();
-        }
-
-        throw new RuntimeException("Failed to get translation!");
-    }
-
-    private String createPayload(String input, Language source, Language target) {
-        return TranslateRequest.builder()
-                .input(input)
-                .source(source.getCode())
-                .target(target.getCode())
-                .build();
-    }
-
-    @SneakyThrows
-    private URI createUrl() {
-        return new URI(String.format("%s?key=%s", isalinProperties.getServiceUrl(), isalinProperties.getServiceKey()));
     }
 }
