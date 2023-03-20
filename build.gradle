@@ -38,6 +38,7 @@ dependencies {
 
 test {
 	useJUnitPlatform()
+	systemProperties System.properties
 }
 
 publishing {
