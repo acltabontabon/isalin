@@ -41,6 +41,11 @@ test {
 	systemProperties System.properties
 }
 
+java {
+	withSourcesJar()
+	withJavadocJar()
+}
+
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
