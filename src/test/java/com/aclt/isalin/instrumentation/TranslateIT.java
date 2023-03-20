@@ -7,11 +7,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.EnabledIf;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = Application.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
+@EnabledIf(expression = "#{environment['run.itest'] == 'true'}", loadContext = true)
 public class TranslateIT {
 
     @Autowired
@@ -22,6 +24,13 @@ public class TranslateIT {
         String expected = "Hello mundo!";
 
         assertEquals(expected, mockService.methodWithPlainResponse());
+    }
+
+    @Test
+    void testMethodWithoutSourceLanguage() {
+        String expected = "Hello mundo!";
+
+        assertEquals(expected, mockService.methodWithoutSourceLanguage());
     }
 
     @Test

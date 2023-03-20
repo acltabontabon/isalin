@@ -11,9 +11,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Translate {
 
-    Language from() default Language.ENGLISH;
+    Language from() default Language.AUTO_DETECT;
 
-    Language to() default Language.FILIPINO;
+    Language to();
 
     String value() default "";
 
