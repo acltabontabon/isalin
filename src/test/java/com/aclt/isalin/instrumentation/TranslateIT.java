@@ -28,7 +28,7 @@ public class TranslateIT {
 
     @Test
     void testMethodWithoutSourceLanguage() {
-        String expected = "Hello mundo!";
+        String expected = "Ito ay isang halimbawa ng pagsasalin na walang pinagmulang wika!";
 
         assertEquals(expected, mockService.methodWithoutSourceLanguage());
     }
