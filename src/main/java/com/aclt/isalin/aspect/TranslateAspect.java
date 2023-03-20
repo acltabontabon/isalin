@@ -8,7 +8,6 @@ import com.aclt.isalin.properties.IsalinProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -28,7 +27,6 @@ import java.net.http.HttpResponse;
 import java.util.Objects;
 import java.util.Optional;
 
-@Slf4j
 @Aspect
 @RequiredArgsConstructor
 public class TranslateAspect {
@@ -38,9 +36,7 @@ public class TranslateAspect {
     private final IsalinProperties isalinProperties;
 
     private final ExpressionParser expressionParser = new SpelExpressionParser();
-
     private final ObjectMapper objectMapper = new ObjectMapper();
-
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
     @SneakyThrows
