@@ -1,4 +1,4 @@
-package com.aclt.isalin;
+package com.acltabontabon.isalin;
 
 import lombok.Getter;
 

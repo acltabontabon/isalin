@@ -1,9 +1,9 @@
-package com.aclt.isalin.service;
+package com.acltabontabon.isalin.service;
 
-import com.aclt.isalin.Language;
-import com.aclt.isalin.model.TranslateRequest;
-import com.aclt.isalin.model.TranslateResponse;
-import com.aclt.isalin.properties.IsalinProperties;
+import com.acltabontabon.isalin.Language;
+import com.acltabontabon.isalin.model.TranslateRequest;
+import com.acltabontabon.isalin.model.TranslateResponse;
+import com.acltabontabon.isalin.properties.IsalinProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
