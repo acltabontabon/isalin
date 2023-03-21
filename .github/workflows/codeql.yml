@@ -58,6 +58,8 @@ jobs:
     # Autobuild attempts to build any compiled languages  (C/C++, C#, Go, or Java).
     # If this step fails, then you should remove it and run the build manually (see below)
     - name: Autobuild
+      env:
+        SERVICE_KEY=${{secrets.SERVICE_KEY}}
       run: |
         ./gradlew clean build -Drun.itest=true
 
