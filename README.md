@@ -5,9 +5,13 @@
 
 Isalin is a spring-boot library that aims to provide a less boilerplate and convenient way of using the Google translate API.
 
+# Features
+- Provides `@Translate` annotation to translate the response of a method
+- Supported all languages listed [here](https://cloud.google.com/translate/docs/languages)
+
 # Usage
 
-### Setting Up
+### Setting Up Your Project
 ##### Apache Maven 
 ```xml
 <dependency>
@@ -23,6 +27,18 @@ implementation group: 'com.acltabontabon', name: 'isalin', version: '0.1.0'
 ```
 
 ### Using `@Translate`
+
+To start using Isalin, you need to set the property below in your `applications.properties`:
+```
+isalin.service-key=<YOUR_GOOGLE_TRANSLATE_API_KEY>
+```
+> **Note**
+>
+> At the moment, Isalin is only compatible with the basic edition (v2) of Google translate API.
+>
+> For instruction on how to get Google Translate API key please refer to this [link](https://cloud.google.com/translate/docs/setup).
+
+
 #### Translating simple text
 ```java
 @Translate(from = Language.ENGLISH, to = Language.FILIPINO)
