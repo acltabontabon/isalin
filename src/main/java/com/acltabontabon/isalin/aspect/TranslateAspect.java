@@ -1,7 +1,7 @@
-package com.aclt.isalin.aspect;
+package com.acltabontabon.isalin.aspect;
 
-import com.aclt.isalin.annotation.Translate;
-import com.aclt.isalin.service.IsalinService;
+import com.acltabontabon.isalin.annotation.Translate;
+import com.acltabontabon.isalin.service.IsalinService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ public class TranslateAspect {
 
 
     @SneakyThrows
-    @Around("@annotation(com.aclt.isalin.annotation.Translate)")
+    @Around("@annotation(com.acltabontabon.isalin.annotation.Translate)")
     public Object aroundTranslate(ProceedingJoinPoint joinPoint) {
         Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
         Object joinPointResult = joinPoint.proceed();

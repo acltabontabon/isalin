@@ -1,8 +1,8 @@
-package com.aclt.isalin;
+package com.acltabontabon.isalin;
 
-import com.aclt.isalin.aspect.TranslateAspect;
-import com.aclt.isalin.properties.IsalinProperties;
-import com.aclt.isalin.service.IsalinService;
+import com.acltabontabon.isalin.aspect.TranslateAspect;
+import com.acltabontabon.isalin.properties.IsalinProperties;
+import com.acltabontabon.isalin.service.IsalinService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

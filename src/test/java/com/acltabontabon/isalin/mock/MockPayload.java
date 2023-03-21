@@ -1,4 +1,4 @@
-package com.aclt.isalin.mock;
+package com.acltabontabon.isalin.mock;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,8 +1,10 @@
 plugins {
 	id 'java-library'
 	id 'maven-publish'
+	id 'signing'
 	id 'org.springframework.boot' version '2.7.9' apply false
 	id 'io.spring.dependency-management' version '1.1.0'
+	id 'io.github.gradle-nexus.publish-plugin' version "1.3.0"
 }
 
 dependencyManagement {
@@ -11,8 +13,8 @@ dependencyManagement {
 	}
 }
 
-group = 'com.aclt'
-version = '0.0.1-dev'
+group = 'com.acltabontabon'
+description = 'Isalin is a spring-boot library that aims to provide a less boilerplate and convenient way of using the Google translate API.'
 sourceCompatibility = '11'
 
 repositories {
@@ -49,6 +51,11 @@ java {
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
+			groupId = project.group.toString()
+			artifactId = project.name
+			version = project.version.toString()
+			description = project.description.toString()
+
 			from components.java
 
 			versionMapping {
@@ -59,6 +66,62 @@ publishing {
 					fromResolutionResult()
 				}
 			}
+
+			pom {
+				name = project.name
+				description = project.description.toString()
+				url = 'https://github.com/acltabontabon/isalin'
+
+				licenses {
+					license {
+						name = 'MIT'
+						url = 'https://opensource.org/license/mit/'
+					}
+				}
+				developers {
+					developer {
+						id = 'aclt'
+						name = 'Alvin Cris Tabontabon'
+					}
+				}
+				scm {
+					url = 'https://github.com/acltabontabon/isalin.git'
+					connection = 'scm:git:git://github.com/acltabontabon/isalin.git'
+					developerConnection = 'scm:git:git://github.com/acltabontabon/isalin.git'
+				}
+				issueManagement {
+					url = 'https://github.com/acltabontabon/isalin/issues'
+				}
+			}
 		}
+	}
+}
+
+nexusPublishing {
+	repositories {
+		sonatype {
+			nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+			snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+			var ossrhUsername = providers
+					.environmentVariable("OSSRH_USERNAME")
+					.forUseAtConfigurationTime()
+			var ossrhPassword = providers
+					.environmentVariable("OSSRH_PASSWORD")
+					.forUseAtConfigurationTime()
+			if (ossrhUsername.isPresent() && ossrhPassword.isPresent()) {
+				username.set(ossrhUsername.get())
+				password.set(ossrhPassword.get())
+			}
+		}
+	}
+}
+
+signing {
+	var signingKey = providers.environmentVariable("GPG_SIGNING_KEY")
+	var signingPassphrase = providers.environmentVariable("GPG_SIGNING_PASSPHRASE")
+
+	if (signingKey.isPresent() && signingPassphrase.isPresent()) {
+		useInMemoryPgpKeys(signingKey.get(), signingPassphrase.get())
+		sign publishing.publications.mavenJava
 	}
 }

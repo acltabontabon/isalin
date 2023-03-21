@@ -1,4 +1,4 @@
-package com.aclt.isalin.model;
+package com.acltabontabon.isalin.model;
 
 import lombok.Data;
 
