@@ -1,10 +1,5 @@
-# Isalin
-Is a spring-boot library that aims to provide a less boilerplate and convenient way of using the Google translate API.
-
-
-# Motivation
-Created this library for fun and learning. If you find this helpful and/or useful I'd be really grateful if you can <a href='https://ko-fi.com/acltabontabon' target='_blank'><img height='35' style='border:0px;height:26px;' src='https://az743702.vo.msecnd.net/cdn/kofi3.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' />
-
+# About
+Isalin is a spring-boot library that aims to provide a less boilerplate and convenient way of using the Google translate API.
 
 # Usage
 
@@ -30,8 +25,14 @@ public String getGreetings() {
 public CustomMessage getGreetings() {
   CustomMessage msg = new CustomMessage();
   msg.setSource("Tarzan");
-  msg.setBody(new MockPayload.Body("Welcome to the jungle!"));
+  msg.setBody(new Content("Welcome to the jungle!"));
 
   return msg;
 }
 ```
+
+# Motivation
+Created this library for fun and learning. If you somehow find this helpful and/or useful - know that, I could really use some drinks. 
+
+
+<a href='https://ko-fi.com/acltabontabon' target='_blank'><img style='height:30px;' src='https://az743702.vo.msecnd.net/cdn/kofi3.png?v=1' border='0' alt='Buy Me a Coffee at ko-fi.com'></a>
