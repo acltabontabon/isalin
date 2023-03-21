@@ -11,7 +11,7 @@ dependencyManagement {
 	}
 }
 
-group = 'com.aclt'
+group = 'com.acltabontabon'
 sourceCompatibility = '11'
 
 repositories {

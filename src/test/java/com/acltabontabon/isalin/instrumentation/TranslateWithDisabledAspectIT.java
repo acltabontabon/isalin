@@ -1,7 +1,7 @@
-package com.aclt.isalin.instrumentation;
+package com.acltabontabon.isalin.instrumentation;
 
-import com.aclt.isalin.IsalinTestBase;
-import com.aclt.isalin.mock.MockService;
+import com.acltabontabon.isalin.IsalinTestBase;
+import com.acltabontabon.isalin.mock.MockService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;

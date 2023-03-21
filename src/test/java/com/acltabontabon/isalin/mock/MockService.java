@@ -1,7 +1,7 @@
-package com.aclt.isalin.mock;
+package com.acltabontabon.isalin.mock;
 
-import com.aclt.isalin.Language;
-import com.aclt.isalin.annotation.Translate;
+import com.acltabontabon.isalin.Language;
+import com.acltabontabon.isalin.annotation.Translate;
 import org.springframework.stereotype.Service;
 
 @Service

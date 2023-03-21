@@ -1,6 +1,6 @@
-package com.aclt.isalin.annotation;
+package com.acltabontabon.isalin.annotation;
 
-import com.aclt.isalin.Language;
+import com.acltabontabon.isalin.Language;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

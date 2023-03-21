@@ -1,4 +1,4 @@
-package com.aclt.isalin;
+package com.acltabontabon.isalin;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
