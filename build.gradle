@@ -12,7 +12,6 @@ dependencyManagement {
 }
 
 group = 'com.aclt'
-version = '0.0.1-dev'
 sourceCompatibility = '11'
 
 repositories {
@@ -58,6 +57,17 @@ publishing {
 				usage('java-runtime') {
 					fromResolutionResult()
 				}
+			}
+		}
+	}
+
+	repositories {
+		maven {
+			name = "GitHubPackages"
+			url = uri("https://maven.pkg.github.com/acltabontabon/isalin")
+			credentials {
+				username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+				password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
 			}
 		}
 	}
