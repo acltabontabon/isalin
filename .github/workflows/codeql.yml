@@ -62,10 +62,8 @@ jobs:
 
     - name: Build
       run: |
-        NEW_VERSION=$(echo "${GITHUB_REF}" | cut -d "/" -f3)
-        echo "New version: ${NEW_VERSION}"
-        echo "Github username: ${GITHUB_ACTOR}"
-        ./gradlew clean build
+        java --version
+        ./gradlew build
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
