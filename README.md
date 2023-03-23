@@ -67,6 +67,18 @@ public CustomMessage getGreetings() {
 }
 ```
 
+#### Inline translation
+```java
+@Autowired
+private IsalinService isalinService;
+    
+private void sendGreeting(String msg) {
+    String newMsg  = isalinService.translate(msg, Language.ENGLISH, Language.FILIPINO);
+
+    System.out.println(newMsg);
+}
+ ```
+
 # Motivation
 Created this library for fun and learning. If you somehow find this helpful and/or useful, I'd be grateful for a cup of coffee. :grin: :coffee:
 
