@@ -4,7 +4,7 @@ import lombok.Getter;
 
 public enum Language {
 
-    AUTO_DETECT(""),
+    ANY(""),
     AFRIKAANS("af"),
     ALBANIAN("sq"),
     AMHARIC("am"),

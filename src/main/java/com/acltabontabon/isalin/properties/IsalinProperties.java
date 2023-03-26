@@ -9,8 +9,6 @@ public class IsalinProperties {
 
     private boolean enabled = true;
 
-    private String serviceUrl = "https://translation.googleapis.com/language/translate/v2";
-
-    private String serviceKey;
+    private String projectId;
 
 }
