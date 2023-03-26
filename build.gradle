@@ -26,10 +26,10 @@ dependencies {
 	annotationProcessor 'org.springframework.boot:spring-boot-autoconfigure-processor'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
+	api 'com.google.cloud:google-cloud-translate:2.13.0'
 	api 'org.springframework:spring-aspects'
 	api 'org.springframework.boot:spring-boot-autoconfigure'
 	api 'org.slf4j:slf4j-api'
-	api 'com.fasterxml.jackson.core:jackson-databind'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
@@ -83,6 +83,7 @@ publishing {
 					developer {
 						id = 'aclt'
 						name = 'Alvin Cris Tabontabon'
+						email = 'me@acltabontabon.com'
 					}
 				}
 				scm {
