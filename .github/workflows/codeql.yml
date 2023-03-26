@@ -39,6 +39,8 @@ jobs:
         languages: ${{ matrix.language }}
 
     - name: Build
+      env:
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
       run: |
         ./gradlew build
 
