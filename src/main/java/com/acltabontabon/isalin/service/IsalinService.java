@@ -10,29 +10,43 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 @Slf4j
 @RequiredArgsConstructor
 public class IsalinService {
 
     private final IsalinProperties isalinProperties;
 
+    private TranslationServiceClient translationServiceClient;
+
+    @SneakyThrows
+    @PostConstruct
+    private void init() {
+        translationServiceClient = TranslationServiceClient.create();
+    }
+
     @SneakyThrows
     public String translate(String input, Language source, Language target) {
-        try (TranslationServiceClient serviceClient = TranslationServiceClient.create()) {
-            TranslateTextRequest request = TranslateTextRequest.newBuilder()
-                    .setParent(LocationName.of(isalinProperties.getProjectId(), "global").toString())
-                    .setSourceLanguageCode(source.getCode())
-                    .setTargetLanguageCode(target.getCode())
-                    .addContents(input)
-                    .build();
+        TranslateTextRequest request = TranslateTextRequest.newBuilder()
+                .setParent(LocationName.of(isalinProperties.getProjectId(), "global").toString())
+                .setSourceLanguageCode(source.getCode())
+                .setTargetLanguageCode(target.getCode())
+                .addContents(input)
+                .build();
 
-            TranslateTextResponse response = serviceClient.translateText(request);
+        TranslateTextResponse response = translationServiceClient.translateText(request);
 
-            if (!response.getTranslationsList().isEmpty()) {
-                return response.getTranslationsList().stream().findFirst().get().getTranslatedText();
-            }
+        if (!response.getTranslationsList().isEmpty()) {
+            return response.getTranslationsList().stream().findFirst().get().getTranslatedText();
         }
 
         return "";
+    }
+
+    @PreDestroy
+    private void cleanup() {
+        translationServiceClient.close();
     }
 }
