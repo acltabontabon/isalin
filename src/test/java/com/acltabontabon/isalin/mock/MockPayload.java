@@ -3,6 +3,8 @@ package com.acltabontabon.isalin.mock;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.io.File;
+
 @Data
 public class MockPayload {
 
@@ -17,6 +19,8 @@ public class MockPayload {
     public static class Body {
 
         private String content;
+
+        private File fileContent;
 
     }
 }

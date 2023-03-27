@@ -15,6 +15,7 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.util.StringUtils;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -34,51 +35,56 @@ public class TranslateAspect {
     @Around("@annotation(com.acltabontabon.isalin.annotation.Translate)")
     public Object aroundTranslate(ProceedingJoinPoint joinPoint) {
         Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
+        Translate translate = method.getAnnotation(Translate.class);
         Object joinPointResult = joinPoint.proceed();
 
-        if (method.getReturnType().equals(Void.TYPE)) {
-            return joinPointResult;
-        }
-
-        return translate(joinPointResult, method.getAnnotation(Translate.class));
+        return switch (method.getReturnType().getSimpleName().toLowerCase()) {
+            case "void" -> joinPointResult;
+            case "string" -> isalinService.translateText(joinPointResult.toString(), translate.from(), translate.to());
+            case "file" -> isalinService.translateDocument(((File) joinPointResult).getAbsolutePath(), translate.from(), translate.to());
+            default -> processCustomObject(joinPointResult, translate) ;
+        };
     }
 
-    private Object translate(Object joinPointResult, Translate annotation) {
-        try {
-            if (StringUtils.hasText(annotation.value())) {
-                String fieldMapping = annotation.value().replace(TARGET_REF_KEY, "");
+    private Object processCustomObject(Object joinPointResult, Translate translate) {
+        if (StringUtils.hasText(translate.value())) {
+            String fieldMapping = translate.value().replace(TARGET_REF_KEY, "");
 
-                EvaluationContext context = new StandardEvaluationContext(joinPointResult);
-                String rawValue = expressionParser.parseExpression(fieldMapping).getValue(context).toString();
-                String translatedValue = isalinService.translate(rawValue, annotation.from(), annotation.to());
+            EvaluationContext context = new StandardEvaluationContext(joinPointResult);
+            Object rawValue = expressionParser.parseExpression(fieldMapping).getValue(context);
 
-                assignTranslation(joinPointResult, fieldMapping, translatedValue);
+            if (rawValue instanceof String s) {
+                String result = isalinService.translateText(s, translate.from(), translate.to());
 
-                return joinPointResult;
+                updateCustomObject(joinPointResult, fieldMapping, result);
+            } else if (rawValue instanceof File f) {
+                File result = isalinService.translateDocument(f.getAbsolutePath(), translate.from(), translate.to());
+
+                updateCustomObject(joinPointResult, fieldMapping, result);
+            } else {
+                log.error("Unsupported target object '{}'", joinPointResult.getClass());
             }
-
-            return isalinService.translate(joinPointResult.toString(), annotation.from(), annotation.to());
-        } catch (Exception ex) {
-            return joinPointResult;
         }
+
+        return joinPointResult;
     }
 
     /**
-     * Assign translated value to the target field.
+     * Assign translated value to the target field within a custom object.
      * expression traversal:
      *      n+1:
      *          targetObj = joinPointResult
-     *          expression = body.content
+     *          fieldMapping = body.content
      *      n+2:
      *          targetObj = body
-     *          expression = content
+     *          fieldMapping = content
      *
      * @param targetObj - holds the object instance
      * @param fieldMapping - holds the mapping for the target field
      * @param valueToAssign - holds the translated value
      */
     @SneakyThrows
-    private void assignTranslation(Object targetObj, String fieldMapping, String valueToAssign) {
+    private void updateCustomObject(Object targetObj, String fieldMapping, Object valueToAssign) {
         if (!fieldMapping.contains(".")) {
             Field targetField = targetObj.getClass().getDeclaredField(fieldMapping);
             targetField.setAccessible(true);
@@ -92,6 +98,6 @@ public class TranslateAspect {
         Field targetField = targetObj.getClass().getDeclaredField(parent);
         targetField.setAccessible(true);
 
-        assignTranslation(targetField.get(targetObj), child, valueToAssign);
+        updateCustomObject(targetField.get(targetObj), child, valueToAssign);
     }
 }
