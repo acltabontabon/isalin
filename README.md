@@ -9,6 +9,12 @@ Isalin is a spring-boot library that aims to provide a less boilerplate and conv
 - Provides `@Translate` annotation to translate the response of a method
 - Supported all languages listed [here](https://cloud.google.com/translate/docs/languages)
 
+# Next Release
+- Support translation of documents
+- Adapt Google SDK V3
+- Set source and target compatibility to Java 17
+- Upgrade spring-boot version from `2.7.9` to `3.0.4`
+
 # Usage
 
 ### Setting Up Your Project
