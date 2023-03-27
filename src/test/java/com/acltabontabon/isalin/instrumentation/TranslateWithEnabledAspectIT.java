@@ -7,7 +7,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 
+import java.io.File;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestPropertySource(locations = "classpath:isalin-enabled.properties")
 public class TranslateWithEnabledAspectIT extends IsalinTestBase {
@@ -30,11 +33,27 @@ public class TranslateWithEnabledAspectIT extends IsalinTestBase {
     }
 
     @Test
-    void testMethodWithJson() {
+    void testCustomObjectWithPlainText() {
         String expected = "Maligayang pagdating sa kagubatan!";
         MockPayload message = new MockPayload();
-        message.setBody(new MockPayload.Body("Welcome to the jungle!"));
+        message.setBody(new MockPayload.Body("Welcome to the jungle!", null));
 
-        assertEquals(expected, mockService.methodWithJsonResponse().getBody().getContent());
+        assertEquals(expected, mockService.methodWithTextWithinCustomObject().getBody().getContent());
+    }
+
+    @Test
+    void testMethodWithDocument() {
+        File translatedFile = mockService.methodWithDocumentResponse();
+
+        assertTrue(translatedFile.getName().startsWith("isalin"));
+        assertTrue(translatedFile.exists());
+    }
+
+    @Test
+    void testCustomObjectWithDocument() {
+        MockPayload msg = mockService.methodWithDocumentWithinCustomObject();
+
+        assertTrue(msg.getBody().getFileContent().getName().startsWith("isalin"));
+        assertTrue(msg.getBody().getFileContent().exists());
     }
 }

@@ -40,7 +40,7 @@ public class IsalinService {
     @SneakyThrows
     public File translateDocument(String input, Language source, Language target) {
         File inputFile = new File(input);
-        File tmpFile = Files.createTempFile("", inputFile.getName()).toFile();
+        File tmpFile = Files.createTempFile("isalin-", inputFile.getName()).toFile();
         tmpFile.deleteOnExit();
 
         try (TranslationServiceClient client = TranslationServiceClient.create();
@@ -62,6 +62,8 @@ public class IsalinService {
             TranslateDocumentResponse response = client.translateDocument(request);
             Files.write(tmpFile.toPath(), response.getDocumentTranslation().getByteStreamOutputs(0).toByteArray());
         }
+
+        log.info("Document translation for {} is completed: {}", inputFile.getName(), tmpFile.getAbsolutePath());
 
         return tmpFile;
     }

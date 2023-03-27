@@ -56,11 +56,11 @@ public class TranslateAspect {
             if (rawValue instanceof String s) {
                 String result = isalinService.translateText(s, translate.from(), translate.to());
 
-                assignTranslation(joinPointResult, fieldMapping, result);
+                updateCustomObject(joinPointResult, fieldMapping, result);
             } else if (rawValue instanceof File f) {
                 File result = isalinService.translateDocument(f.getAbsolutePath(), translate.from(), translate.to());
 
-                assignTranslation(joinPointResult, fieldMapping, result);
+                updateCustomObject(joinPointResult, fieldMapping, result);
             } else {
                 log.error("Unsupported target object '{}'", joinPointResult.getClass());
             }
@@ -70,7 +70,7 @@ public class TranslateAspect {
     }
 
     /**
-     * Assign translated value to the target field.
+     * Assign translated value to the target field within a custom object.
      * expression traversal:
      *      n+1:
      *          targetObj = joinPointResult
@@ -84,7 +84,7 @@ public class TranslateAspect {
      * @param valueToAssign - holds the translated value
      */
     @SneakyThrows
-    private void assignTranslation(Object targetObj, String fieldMapping, Object valueToAssign) {
+    private void updateCustomObject(Object targetObj, String fieldMapping, Object valueToAssign) {
         if (!fieldMapping.contains(".")) {
             Field targetField = targetObj.getClass().getDeclaredField(fieldMapping);
             targetField.setAccessible(true);
@@ -98,6 +98,6 @@ public class TranslateAspect {
         Field targetField = targetObj.getClass().getDeclaredField(parent);
         targetField.setAccessible(true);
 
-        assignTranslation(targetField.get(targetObj), child, valueToAssign);
+        updateCustomObject(targetField.get(targetObj), child, valueToAssign);
     }
 }
