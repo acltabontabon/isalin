@@ -2,7 +2,13 @@ package com.acltabontabon.isalin.service;
 
 import com.acltabontabon.isalin.Language;
 import com.acltabontabon.isalin.properties.IsalinProperties;
-import com.google.cloud.translate.v3.*;
+import com.google.cloud.translate.v3.DocumentInputConfig;
+import com.google.cloud.translate.v3.LocationName;
+import com.google.cloud.translate.v3.TranslateDocumentRequest;
+import com.google.cloud.translate.v3.TranslateDocumentResponse;
+import com.google.cloud.translate.v3.TranslateTextRequest;
+import com.google.cloud.translate.v3.TranslateTextResponse;
+import com.google.cloud.translate.v3.TranslationServiceClient;
 import com.google.protobuf.ByteString;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -12,6 +18,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.nio.file.Files;
 
+/**
+ * The class that encapsulates google translation service.
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class IsalinService {
@@ -46,11 +55,10 @@ public class IsalinService {
         try (TranslationServiceClient client = TranslationServiceClient.create();
              FileInputStream fis = new FileInputStream(inputFile)) {
 
-            DocumentInputConfig documentInputConfig =
-                    DocumentInputConfig.newBuilder()
-                            .setContent(ByteString.readFrom(fis))
-                            .setMimeType(getMimeType(inputFile.getName()))
-                            .build();
+            DocumentInputConfig documentInputConfig = DocumentInputConfig.newBuilder()
+                    .setContent(ByteString.readFrom(fis))
+                    .setMimeType(getMimeType(inputFile.getName()))
+                    .build();
 
             TranslateDocumentRequest request = TranslateDocumentRequest.newBuilder()
                     .setParent(LocationName.of(isalinProperties.getProjectId(), "global").toString())
