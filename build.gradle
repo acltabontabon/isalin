@@ -18,6 +18,8 @@ description = 'Isalin is a spring-boot library that aims to provide a less boile
 sourceCompatibility = '17'
 targetCompatibility = '17'
 
+javadoc.options.addStringOption('Xdoclint:none', '-quiet')
+
 repositories {
 	mavenCentral()
 }

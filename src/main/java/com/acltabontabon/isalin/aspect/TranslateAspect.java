@@ -19,6 +19,9 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+/**
+ * The aspect used to intercept the methods annotated by {@link Translate}.
+ */
 @Slf4j
 @Aspect
 @RequiredArgsConstructor
@@ -29,7 +32,6 @@ public class TranslateAspect {
     private final IsalinService isalinService;
 
     private final ExpressionParser expressionParser = new SpelExpressionParser();
-
 
     @SneakyThrows
     @Around("@annotation(com.acltabontabon.isalin.annotation.Translate)")
