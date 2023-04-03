@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.io.File;
+import java.util.List;
 
 @Data
 public class MockPayload {
@@ -13,6 +14,8 @@ public class MockPayload {
     private Body body;
 
     private String content;
+
+    private List<String> contents;
 
     @Data
     @AllArgsConstructor

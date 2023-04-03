@@ -8,6 +8,7 @@ import com.google.cloud.translate.v3.TranslateDocumentRequest;
 import com.google.cloud.translate.v3.TranslateDocumentResponse;
 import com.google.cloud.translate.v3.TranslateTextRequest;
 import com.google.cloud.translate.v3.TranslateTextResponse;
+import com.google.cloud.translate.v3.Translation;
 import com.google.cloud.translate.v3.TranslationServiceClient;
 import com.google.protobuf.ByteString;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The class that encapsulates google translation service.
@@ -29,20 +33,32 @@ public class IsalinService {
 
     @SneakyThrows
     public String translateText(String input, Language source, Language target) {
+        List<String> translation = translateText(List.of(input), source, target);
+
+        if (!translation.isEmpty()) {
+            return translation.stream().findFirst().get();
+        }
+        return "";
+    }
+
+    @SneakyThrows
+    public List<String> translateText(List<String> input, Language source, Language target) {
+        List<String> list = new ArrayList<>();
         try (TranslationServiceClient translationServiceClient = TranslationServiceClient.create()) {
             TranslateTextRequest request = TranslateTextRequest.newBuilder()
                     .setParent(LocationName.of(isalinProperties.getProjectId(), "global").toString())
                     .setSourceLanguageCode(source.getCode())
                     .setTargetLanguageCode(target.getCode())
-                    .addContents(input)
+                    .addAllContents(input)
                     .build();
 
             TranslateTextResponse response = translationServiceClient.translateText(request);
 
             if (!response.getTranslationsList().isEmpty()) {
-                return response.getTranslationsList().stream().findFirst().get().getTranslatedText();
+                list = response.getTranslationsList().stream().map(Translation::getTranslatedText).collect(Collectors.toList());
             }
-            return "";
+
+            return list;
         }
     }
 

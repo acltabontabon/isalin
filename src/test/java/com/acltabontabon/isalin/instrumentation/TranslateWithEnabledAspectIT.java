@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 
 import java.io.File;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -26,6 +27,20 @@ public class TranslateWithEnabledAspectIT extends IsalinTestBase {
     }
 
     @Test
+    void testMethodWithListOfPlainText() {
+        List<String> expected = List.of("Hello mundo!", "Kamusta ka?");
+
+        assertEquals(expected, mockService.methodWithListOfTextResponse());
+    }
+
+    @Test
+    void testCustomObjectWithListOfPlainText() {
+        List<String> expected = List.of("Hello mundo!", "Kamusta ka?");
+
+        assertEquals(expected, mockService.methodWithListOfTextWithinCustomObject().getContents());
+    }
+
+    @Test
     void testMethodWithoutSourceLanguage() {
         String expected = "Ito ay isang halimbawa ng pagsasalin na walang pinagmulang wika!";
 
@@ -35,8 +50,6 @@ public class TranslateWithEnabledAspectIT extends IsalinTestBase {
     @Test
     void testCustomObjectWithPlainText() {
         String expected = "Maligayang pagdating sa kagubatan!";
-        MockPayload message = new MockPayload();
-        message.setBody(new MockPayload.Body("Welcome to the jungle!", null));
 
         assertEquals(expected, mockService.methodWithTextWithinCustomObject().getBody().getContent());
     }
