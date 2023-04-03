@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * The aspect used to intercept the methods annotated by {@link Translate}.
@@ -44,8 +45,25 @@ public class TranslateAspect {
             case "void" -> joinPointResult;
             case "string" -> isalinService.translateText(joinPointResult.toString(), translate.from(), translate.to());
             case "file" -> isalinService.translateDocument(((File) joinPointResult).getAbsolutePath(), translate.from(), translate.to());
+            case "list" -> processList((List<?>) joinPointResult, translate);
             default -> processCustomObject(joinPointResult, translate) ;
         };
+    }
+
+    private boolean containsText(List<?> list) {
+        if (list.isEmpty()) {
+            return false;
+        }
+
+        return list.get(0) instanceof String;
+    }
+
+    private Object processList(List<?> joinPointResult, Translate translate) {
+        if (containsText(joinPointResult)) {
+            return isalinService.translateText((List<String>) joinPointResult, translate.from(), translate.to());
+        }
+
+        return joinPointResult;
     }
 
     private Object processCustomObject(Object joinPointResult, Translate translate) {
@@ -59,6 +77,12 @@ public class TranslateAspect {
                 String result = isalinService.translateText(s, translate.from(), translate.to());
 
                 updateCustomObject(joinPointResult, fieldMapping, result);
+            } else if (rawValue instanceof List<?> l) {
+                if (containsText(l)) {
+                    List<String> result = isalinService.translateText((List<String>) l, translate.from(), translate.to());
+
+                    updateCustomObject(joinPointResult, fieldMapping, result);
+                }
             } else if (rawValue instanceof File f) {
                 File result = isalinService.translateDocument(f.getAbsolutePath(), translate.from(), translate.to());
 

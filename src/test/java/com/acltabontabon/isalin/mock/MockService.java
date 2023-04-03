@@ -8,6 +8,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.util.List;
 
 import static com.acltabontabon.isalin.mock.MockPayload.Body;
 
@@ -22,6 +23,11 @@ public class MockService {
         return "Hello world!";
     }
 
+    @Translate(from = Language.ENGLISH, to = Language.FILIPINO)
+    public List<String> methodWithListOfTextResponse() {
+        return List.of("Hello world!", "How are you?");
+    }
+
     @Translate(to = Language.FILIPINO)
     public String methodWithoutSourceLanguage() {
         return "This is an example of a translation without a source language!";
@@ -32,6 +38,14 @@ public class MockService {
         MockPayload msg = new MockPayload();
         msg.setSource("Tarzan");
         msg.setBody(new Body("Welcome to the jungle!", null));
+
+        return msg;
+    }
+
+    @Translate(value = "$.contents", from = Language.ENGLISH, to = Language.FILIPINO)
+    public MockPayload methodWithListOfTextWithinCustomObject() {
+        MockPayload msg = new MockPayload();
+        msg.setContents(List.of("Hello world!", "How are you?"));
 
         return msg;
     }
