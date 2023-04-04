@@ -32,17 +32,26 @@ public class IsalinService {
     private final IsalinProperties isalinProperties;
 
     /**
-     * Translate a given string.
+     * Translates a single string.
      *
      * @param input - raw text
      * @param source - source language
      * @param target - target language
-     * @return translated text if successful, otherwise raw text
+     * @return translated text if successful, otherwise raw input
      */
+    @SneakyThrows
     public String translateText(String input, Language source, Language target) {
         return translateTexts(List.of(input), source, target).stream().findFirst().orElse(input);
     }
 
+    /**
+     * Translates a list of string.
+     *
+     * @param input - list of raw texts
+     * @param source - source language
+     * @param target - target language
+     * @return translated texts if successful, otherwise raw input
+     */
     public List<String> translateTexts(List<String> input, Language source, Language target) {
         List<String> list = new ArrayList<>();
 
