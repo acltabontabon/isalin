@@ -57,10 +57,25 @@ public class MockService {
     }
 
     @SneakyThrows
+    @Translate(from = Language.ENGLISH, to = Language.FILIPINO)
+    public List<File> methodWithListOfDocumentResponse() {
+        return List.of(sampleFile.getFile(), sampleFile.getFile());
+    }
+
+    @SneakyThrows
     @Translate(value = "$.body.fileContent", from = Language.ENGLISH, to = Language.FILIPINO)
     public MockPayload methodWithDocumentWithinCustomObject() {
         MockPayload msg = new MockPayload();
         msg.setBody(new Body("", sampleFile.getFile()));
+
+        return msg;
+    }
+
+    @SneakyThrows
+    @Translate(value = "$.fileContents", from = Language.ENGLISH, to = Language.FILIPINO)
+    public MockPayload methodWithListOfDocumentsWithinCustomObject() {
+        MockPayload msg = new MockPayload();
+        msg.setFileContents(List.of(sampleFile.getFile(), sampleFile.getFile()));
 
         return msg;
     }

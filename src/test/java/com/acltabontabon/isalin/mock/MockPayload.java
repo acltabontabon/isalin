@@ -17,6 +17,8 @@ public class MockPayload {
 
     private List<String> contents;
 
+    private List<File> fileContents;
+
     @Data
     @AllArgsConstructor
     public static class Body {

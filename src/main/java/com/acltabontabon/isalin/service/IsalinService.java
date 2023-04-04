@@ -33,16 +33,17 @@ public class IsalinService {
 
     @SneakyThrows
     public String translateText(String input, Language source, Language target) {
-        List<String> translation = translateText(List.of(input), source, target);
+        List<String> translation = translateTexts(List.of(input), source, target);
 
         if (!translation.isEmpty()) {
             return translation.stream().findFirst().get();
         }
+
         return "";
     }
 
     @SneakyThrows
-    public List<String> translateText(List<String> input, Language source, Language target) {
+    public List<String> translateTexts(List<String> input, Language source, Language target) {
         List<String> list = new ArrayList<>();
         try (TranslationServiceClient translationServiceClient = TranslationServiceClient.create()) {
             TranslateTextRequest request = TranslateTextRequest.newBuilder()
@@ -63,17 +64,30 @@ public class IsalinService {
     }
 
     @SneakyThrows
-    public File translateDocument(String input, Language source, Language target) {
-        File inputFile = new File(input);
-        File tmpFile = Files.createTempFile("isalin-", inputFile.getName()).toFile();
-        tmpFile.deleteOnExit();
+    public File translateDocument(File input, Language source, Language target) {
+        List<File> translatedDocs = translateDocuments(List.of(input), source, target);
 
-        try (TranslationServiceClient client = TranslationServiceClient.create();
-             FileInputStream fis = new FileInputStream(inputFile)) {
+        if (translatedDocs.isEmpty()) {
+            return input;
+        }
+
+        return translatedDocs.stream().findFirst().get();
+    }
+
+    @SneakyThrows
+    public List<File> translateDocuments(List<File> input, Language source, Language target) {
+        List<File> translatedDocs = new ArrayList<>();
+
+        TranslationServiceClient client = TranslationServiceClient.create();
+
+        for (File file: input) {
+            FileInputStream fis = new FileInputStream(file);
+            File tmpFile = Files.createTempFile("isalin-", file.getName()).toFile();
+            tmpFile.deleteOnExit();
 
             DocumentInputConfig documentInputConfig = DocumentInputConfig.newBuilder()
                     .setContent(ByteString.readFrom(fis))
-                    .setMimeType(getMimeType(inputFile.getName()))
+                    .setMimeType(getMimeType(file.getName()))
                     .build();
 
             TranslateDocumentRequest request = TranslateDocumentRequest.newBuilder()
@@ -85,11 +99,16 @@ public class IsalinService {
 
             TranslateDocumentResponse response = client.translateDocument(request);
             Files.write(tmpFile.toPath(), response.getDocumentTranslation().getByteStreamOutputs(0).toByteArray());
+
+            log.info("Document translation for {} is completed: {}", file.getName(), tmpFile.getAbsolutePath());
+            translatedDocs.add(tmpFile);
+
+            fis.close();
         }
 
-        log.info("Document translation for {} is completed: {}", inputFile.getName(), tmpFile.getAbsolutePath());
+        client.close();
 
-        return tmpFile;
+        return translatedDocs;
     }
 
     private String getMimeType(String filename) {

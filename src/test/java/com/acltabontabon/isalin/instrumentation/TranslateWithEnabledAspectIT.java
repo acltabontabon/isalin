@@ -55,11 +55,14 @@ public class TranslateWithEnabledAspectIT extends IsalinTestBase {
     }
 
     @Test
-    void testMethodWithDocument() {
-        File translatedFile = mockService.methodWithDocumentResponse();
+    void testMethodWithListOfDocuments() {
+        List<File> translatedFiles = mockService.methodWithListOfDocumentResponse();
 
-        assertTrue(translatedFile.getName().startsWith("isalin"));
-        assertTrue(translatedFile.exists());
+        assertEquals(2, translatedFiles.size());
+        for (File translatedFile: translatedFiles) {
+            assertTrue(translatedFile.getName().startsWith("isalin"));
+            assertTrue(translatedFile.exists());
+        }
     }
 
     @Test
@@ -68,5 +71,16 @@ public class TranslateWithEnabledAspectIT extends IsalinTestBase {
 
         assertTrue(msg.getBody().getFileContent().getName().startsWith("isalin"));
         assertTrue(msg.getBody().getFileContent().exists());
+    }
+
+    @Test
+    void testCustomObjectWithListOfDocuments() {
+        MockPayload msg = mockService.methodWithListOfDocumentsWithinCustomObject();
+
+        assertEquals(2, msg.getFileContents().size());
+        for (File translatedFile: msg.getFileContents()) {
+            assertTrue(translatedFile.getName().startsWith("isalin"));
+            assertTrue(translatedFile.exists());
+        }
     }
 }
