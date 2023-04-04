@@ -44,7 +44,7 @@ public class TranslateAspect {
         return switch (method.getReturnType().getSimpleName().toLowerCase()) {
             case "void" -> joinPointResult;
             case "string" -> isalinService.translateText(joinPointResult.toString(), translate.from(), translate.to());
-            case "file" -> isalinService.translateDocument(((File) joinPointResult).getAbsolutePath(), translate.from(), translate.to());
+            case "file" -> isalinService.translateDocument(((File) joinPointResult), translate.from(), translate.to());
             case "list" -> processList((List<?>) joinPointResult, translate);
             default -> processCustomObject(joinPointResult, translate) ;
         };
@@ -58,38 +58,52 @@ public class TranslateAspect {
         return list.get(0) instanceof String;
     }
 
+    private boolean containsFile(List<?> list) {
+        if (list.isEmpty()) {
+            return false;
+        }
+
+        return list.get(0) instanceof File;
+    }
+
     private Object processList(List<?> joinPointResult, Translate translate) {
         if (containsText(joinPointResult)) {
-            return isalinService.translateText((List<String>) joinPointResult, translate.from(), translate.to());
+            return isalinService.translateTexts((List<String>) joinPointResult, translate.from(), translate.to());
+        }
+
+        if (containsFile(joinPointResult)) {
+            return isalinService.translateDocuments((List<File>) joinPointResult, translate.from(), translate.to());
         }
 
         return joinPointResult;
     }
 
     private Object processCustomObject(Object joinPointResult, Translate translate) {
-        if (StringUtils.hasText(translate.value())) {
-            String fieldMapping = translate.value().replace(TARGET_REF_KEY, "");
+        if (!StringUtils.hasText(translate.value())) {
+            return joinPointResult;
+        }
 
-            EvaluationContext context = new StandardEvaluationContext(joinPointResult);
-            Object rawValue = expressionParser.parseExpression(fieldMapping).getValue(context);
+        String fieldMapping = translate.value().replace(TARGET_REF_KEY, "");
+        EvaluationContext context = new StandardEvaluationContext(joinPointResult);
+        Object rawValue = expressionParser.parseExpression(fieldMapping).getValue(context);
+        Object translation = null;
 
-            if (rawValue instanceof String s) {
-                String result = isalinService.translateText(s, translate.from(), translate.to());
-
-                updateCustomObject(joinPointResult, fieldMapping, result);
-            } else if (rawValue instanceof List<?> l) {
-                if (containsText(l)) {
-                    List<String> result = isalinService.translateText((List<String>) l, translate.from(), translate.to());
-
-                    updateCustomObject(joinPointResult, fieldMapping, result);
-                }
-            } else if (rawValue instanceof File f) {
-                File result = isalinService.translateDocument(f.getAbsolutePath(), translate.from(), translate.to());
-
-                updateCustomObject(joinPointResult, fieldMapping, result);
-            } else {
-                log.error("Unsupported target object '{}'", joinPointResult.getClass());
+        if (rawValue instanceof String s) {
+            translation = isalinService.translateText(s, translate.from(), translate.to());
+        } else if (rawValue instanceof List<?> l) {
+            if (containsText(l)) {
+                translation = isalinService.translateTexts((List<String>) l, translate.from(), translate.to());
+            } else if (containsFile(l)) {
+                translation = isalinService.translateDocuments((List<File>) l, translate.from(), translate.to());
             }
+        } else if (rawValue instanceof File f) {
+            translation = isalinService.translateDocument(f, translate.from(), translate.to());
+        } else {
+            log.error("Unsupported target object '{}'", joinPointResult.getClass());
+        }
+
+        if (translation != null) {
+            updateCustomObject(joinPointResult, fieldMapping, translation);
         }
 
         return joinPointResult;
@@ -97,7 +111,7 @@ public class TranslateAspect {
 
     /**
      * Assign translated value to the target field within a custom object.
-     * expression traversal:
+     * fieldMapping traversal:
      *      n+1:
      *          targetObj = joinPointResult
      *          fieldMapping = body.content
