@@ -31,20 +31,21 @@ public class IsalinService {
 
     private final IsalinProperties isalinProperties;
 
-    @SneakyThrows
+    /**
+     * Translate a given string.
+     *
+     * @param input - raw text
+     * @param source - source language
+     * @param target - target language
+     * @return translated text if successful, otherwise raw text
+     */
     public String translateText(String input, Language source, Language target) {
-        List<String> translation = translateTexts(List.of(input), source, target);
-
-        if (!translation.isEmpty()) {
-            return translation.stream().findFirst().get();
-        }
-
-        return "";
+        return translateTexts(List.of(input), source, target).stream().findFirst().orElse(input);
     }
 
-    @SneakyThrows
     public List<String> translateTexts(List<String> input, Language source, Language target) {
         List<String> list = new ArrayList<>();
+
         try (TranslationServiceClient translationServiceClient = TranslationServiceClient.create()) {
             TranslateTextRequest request = TranslateTextRequest.newBuilder()
                     .setParent(LocationName.of(isalinProperties.getProjectId(), "global").toString())
@@ -60,7 +61,11 @@ public class IsalinService {
             }
 
             return list;
+        } catch (Exception e) {
+            log.error("Translation request failed. Reason: {}", e.getMessage(), e);
         }
+
+        return input;
     }
 
     @SneakyThrows
