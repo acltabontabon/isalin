@@ -12,11 +12,11 @@ import com.google.cloud.translate.v3.Translation;
 import com.google.cloud.translate.v3.TranslationServiceClient;
 import com.google.protobuf.ByteString;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,56 +62,48 @@ public class IsalinService {
 
             return list;
         } catch (Exception e) {
-            log.error("Translation request failed. Reason: {}", e.getMessage(), e);
+            log.error("Text translation request failed. Reason: {}", e.getMessage(), e);
         }
 
         return input;
     }
 
-    @SneakyThrows
     public File translateDocument(File input, Language source, Language target) {
-        List<File> translatedDocs = translateDocuments(List.of(input), source, target);
-
-        if (translatedDocs.isEmpty()) {
-            return input;
-        }
-
-        return translatedDocs.stream().findFirst().get();
+        return translateDocuments(List.of(input), source, target).stream().findFirst().orElse(input);
     }
 
-    @SneakyThrows
     public List<File> translateDocuments(List<File> input, Language source, Language target) {
         List<File> translatedDocs = new ArrayList<>();
 
-        TranslationServiceClient client = TranslationServiceClient.create();
+        try (TranslationServiceClient client = TranslationServiceClient.create()) {
+            for (File file: input) {
+                try (FileInputStream fis = new FileInputStream(file)) {
+                    File tmpFile = Files.createTempFile("isalin-", file.getName()).toFile();
+                    tmpFile.deleteOnExit();
 
-        for (File file: input) {
-            FileInputStream fis = new FileInputStream(file);
-            File tmpFile = Files.createTempFile("isalin-", file.getName()).toFile();
-            tmpFile.deleteOnExit();
+                    DocumentInputConfig documentInputConfig = DocumentInputConfig.newBuilder()
+                            .setContent(ByteString.readFrom(fis))
+                            .setMimeType(getMimeType(file.getName()))
+                            .build();
 
-            DocumentInputConfig documentInputConfig = DocumentInputConfig.newBuilder()
-                    .setContent(ByteString.readFrom(fis))
-                    .setMimeType(getMimeType(file.getName()))
-                    .build();
+                    TranslateDocumentRequest request = TranslateDocumentRequest.newBuilder()
+                            .setParent(LocationName.of(isalinProperties.getProjectId(), "global").toString())
+                            .setSourceLanguageCode(source.getCode())
+                            .setTargetLanguageCode(target.getCode())
+                            .setDocumentInputConfig(documentInputConfig)
+                            .build();
 
-            TranslateDocumentRequest request = TranslateDocumentRequest.newBuilder()
-                    .setParent(LocationName.of(isalinProperties.getProjectId(), "global").toString())
-                    .setSourceLanguageCode(source.getCode())
-                    .setTargetLanguageCode(target.getCode())
-                    .setDocumentInputConfig(documentInputConfig)
-                    .build();
+                    TranslateDocumentResponse response = client.translateDocument(request);
+                    Files.write(tmpFile.toPath(), response.getDocumentTranslation().getByteStreamOutputs(0).toByteArray());
 
-            TranslateDocumentResponse response = client.translateDocument(request);
-            Files.write(tmpFile.toPath(), response.getDocumentTranslation().getByteStreamOutputs(0).toByteArray());
-
-            log.info("Document translation for {} is completed: {}", file.getName(), tmpFile.getAbsolutePath());
-            translatedDocs.add(tmpFile);
-
-            fis.close();
+                    log.info("Document translation for {} is completed: {}", file.getName(), tmpFile.getAbsolutePath());
+                    translatedDocs.add(tmpFile);
+                }
+            }
+        } catch (IOException e) {
+            log.error("Docs translation request failed. Reason: {}", e.getMessage(), e);
+            return input;
         }
-
-        client.close();
 
         return translatedDocs;
     }
