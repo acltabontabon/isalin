@@ -38,11 +38,31 @@ implementation group: 'com.acltabontabon', name: 'isalin', version: '1.0.0'
 
 To start using Isalin library, you need to setup first your [Google Authentication credentials](https://cloud.google.com/docs/authentication/provide-credentials-adc).
 
-#### Simple text translation
+#### Single text translation
 ```java
 @Translate(from = Language.ENGLISH, to = Language.FILIPINO)
 public String getGreetings() {
   return "Hello world!";
+}
+```
+
+#### Single text translation with auto detection of source language
+```java
+@Translate(to = Language.FILIPINO)
+public String getGreeting() {
+  return "Hello world!";
+}
+```
+
+#### Single text translation within a custom object
+```java
+@Translate(value = "$.body.content", from = Language.ENGLISH, to = Language.FILIPINO)
+public CustomMessage getGreeting() {
+  CustomMessage msg = new CustomMessage();
+  msg.setSource("Tarzan");
+  msg.setBody(new Content("Welcome to the jungle!"));
+
+  return msg;
 }
 ```
 
@@ -54,35 +74,24 @@ public List<String> getGreetings() {
 }
 ```
 
-#### Simple text translation with auto detection of source language
-```java
-@Translate(to = Language.FILIPINO)
-public String getGreetings() {
-  return "Hello world!";
-}
-```
-
-#### Simple text translation within a custom object
-```java
-@Translate(value = "$.body.content", from = Language.ENGLISH, to = Language.FILIPINO)
-public CustomMessage getGreetings() {
-  CustomMessage msg = new CustomMessage();
-  msg.setSource("Tarzan");
-  msg.setBody(new Content("Welcome to the jungle!"));
-
-  return msg;
-}
-```
-
-#### Translating simple file
+#### Single file translation
 ```java
 @Translate(from = Language.ENGLISH, to = Language.FILIPINO)
-public File getGreetings() {
+public File getDocument() {
   return new File("/path/to/my/file.pdf");
 }
 ```
+
 > **Note**
 > Supported file formats: `.doc`, `.docx`, `.pdf`, `.ppt`, `.pptx`, `.xls`, `.xlsx`
+
+#### Multiple file translation
+```java
+@Translate(from = Language.ENGLISH, to = Language.FILIPINO)
+public List<File> getDocuments() {
+  return List.of(new File("/path/to/my/file.pdf"), new File("/path/to/my/file2.pdf"));
+}
+```
 
 
 #### Inline translation
@@ -91,13 +100,15 @@ public File getGreetings() {
 private IsalinService isalinService;
     
 private void translate() {
-  // Text
   String text  = isalinService.translateText("Hello", Language.ENGLISH, Language.FILIPINO);
   List<String> texts  = isalinService.translateTexts(List.of("Hi","Hello"), Language.ENGLISH, Language.FILIPINO);
   
-  // Documents
   File doc  = isalinService.translateDocument("/path/to/my/file.pdf", Language.ENGLISH, Language.FILIPINO);
-  List<File> docs  = isalinService.translateDocuments(List.of("/path/fileA","/path/fileB"), Language.ENGLISH, Language.FILIPINO);
+  List<File> docs  = isalinService.translateDocuments(List.of("/path/file.ppt","/path/file.pdf"), Language.ENGLISH, Language.FILIPINO);
+  
+  // auto detection of source language
+  String text2  = isalinService.translateText("Hello", Language.ANY, Language.FILIPINO);
+  File doc2  = isalinService.translateDocument("/path/to/my/file.pdf", Language.ANY, Language.FILIPINO);
 }
  ```
 
