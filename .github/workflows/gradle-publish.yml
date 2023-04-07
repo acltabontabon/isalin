@@ -32,10 +32,8 @@ jobs:
     - name: Build with Gradle
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
       with:
-        arguments: build
+        arguments: build --scan
 
-    # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
-    # the publishing section of your build.gradle
     - name: Publish
       env:
         GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
@@ -46,4 +44,4 @@ jobs:
         NEW_VERSION=$(echo "${GITHUB_REF}" | cut -d "/" -f3)
         echo "New version: ${NEW_VERSION}"
         echo "Github username: ${GITHUB_ACTOR}"
-        ./gradlew -Pversion=${NEW_VERSION} publish --scan
+        ./gradlew -Pversion=${NEW_VERSION} publish 
