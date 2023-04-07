@@ -39,7 +39,6 @@ public class IsalinService {
      * @param target - target language
      * @return translated text if successful, otherwise raw input
      */
-    @SneakyThrows
     public String translateText(String input, Language source, Language target) {
         return translateTexts(List.of(input), source, target).stream().findFirst().orElse(input);
     }
