@@ -18,6 +18,16 @@ public class MockService {
     private Resource sampleFile;
 
     @Translate(from = Language.ENGLISH, to = Language.FILIPINO)
+    public String methodWithNullResponse() {
+        return null;
+    }
+
+    @Translate(from = Language.ENGLISH, to = Language.FILIPINO)
+    public File methodWithNonExistentFileResponse() {
+        return new File("you-cant-see-me");
+    }
+
+    @Translate(from = Language.ENGLISH, to = Language.FILIPINO)
     public String methodWithPlainResponse() {
         return "Hello world!";
     }

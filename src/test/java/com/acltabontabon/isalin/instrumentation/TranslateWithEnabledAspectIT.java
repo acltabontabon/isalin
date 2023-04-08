@@ -1,6 +1,8 @@
 package com.acltabontabon.isalin.instrumentation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.acltabontabon.isalin.IsalinTestBase;
@@ -17,6 +19,16 @@ public class TranslateWithEnabledAspectIT extends IsalinTestBase {
 
     @Autowired
     private MockService mockService;
+
+    @Test
+    void testMethodWithNullResponse() {
+        assertNull(mockService.methodWithNullResponse());
+    }
+
+    @Test
+    void testMethodWithBrokenFileRefResponse() {
+        assertFalse(mockService.methodWithNonExistentFileResponse().exists());
+    }
 
     @Test
     void testMethodWithPlainText() {
@@ -51,6 +63,14 @@ public class TranslateWithEnabledAspectIT extends IsalinTestBase {
         String expected = "Maligayang pagdating sa kagubatan!";
 
         assertEquals(expected, mockService.methodWithTextWithinCustomObject().getBody().getContent());
+    }
+
+    @Test
+    void testMethodWithDocument() {
+        File translatedFile = mockService.methodWithDocumentResponse();
+
+        assertTrue(translatedFile.getName().startsWith("isalin"));
+        assertTrue(translatedFile.exists());
     }
 
     @Test
