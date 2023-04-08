@@ -36,10 +36,15 @@ jobs:
       uses: github/codeql-action/init@v2
       with:
         languages: ${{ matrix.language }}
+      
+    - name: Setup Gradle 7.6
+      uses: gradle/gradle-build-action@v2
+      with:
+        gradle-version: 7.6
 
     - name: Build
       run: |
-        ./gradlew build
+        ./gradlew build 
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
