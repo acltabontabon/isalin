@@ -40,6 +40,10 @@ public class TranslateAspect {
         Translate translate = method.getAnnotation(Translate.class);
         Object joinPointResult = joinPoint.proceed();
 
+        if (joinPointResult == null) {
+            return joinPointResult;
+        }
+
         return switch (method.getReturnType().getSimpleName().toLowerCase()) {
             case "void" -> joinPointResult;
             case "string" -> isalinService.translateText(joinPointResult.toString(), translate.from(), translate.to());

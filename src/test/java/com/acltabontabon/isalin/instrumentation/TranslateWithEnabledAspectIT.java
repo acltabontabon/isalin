@@ -1,6 +1,7 @@
 package com.acltabontabon.isalin.instrumentation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.acltabontabon.isalin.IsalinTestBase;
@@ -17,6 +18,12 @@ public class TranslateWithEnabledAspectIT extends IsalinTestBase {
 
     @Autowired
     private MockService mockService;
+
+    @Test
+    void testMethodWithNullResponse() {
+        assertNull(mockService.methodWithNullResponse());
+    }
+
 
     @Test
     void testMethodWithPlainText() {

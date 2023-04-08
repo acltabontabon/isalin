@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 
 /**
  * The class that encapsulates google translation service.
@@ -39,6 +40,10 @@ public class IsalinService {
      * @return translated text if successful, otherwise raw input
      */
     public String translateText(String input, Language source, Language target) {
+        if (!StringUtils.hasText(input)) {
+            return input;
+        }
+
         return translateTexts(List.of(input), source, target).stream().findFirst().orElse(input);
     }
 
@@ -76,6 +81,11 @@ public class IsalinService {
     }
 
     public File translateDocument(File input, Language source, Language target) {
+        if (!input.exists()) {
+            log.warn("Skipping translation for {} as it does not exist", input.getAbsolutePath());
+            return input;
+        }
+
         return translateDocuments(List.of(input), source, target).stream().findFirst().orElse(input);
     }
 
@@ -84,6 +94,13 @@ public class IsalinService {
 
         try (TranslationServiceClient client = TranslationServiceClient.create()) {
             for (File file: input) {
+
+                if (!file.exists()) {
+                    log.warn("Skipping translation for {} as it does not exist", file.getAbsolutePath());
+                    translatedDocs.add(file);
+                    continue;
+                }
+
                 try (FileInputStream fis = new FileInputStream(file)) {
                     File tmpFile = Files.createTempFile("isalin-", file.getName()).toFile();
                     tmpFile.deleteOnExit();
