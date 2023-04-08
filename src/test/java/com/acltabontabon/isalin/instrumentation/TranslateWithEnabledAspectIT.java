@@ -24,6 +24,10 @@ public class TranslateWithEnabledAspectIT extends IsalinTestBase {
         assertNull(mockService.methodWithNullResponse());
     }
 
+    @Test
+    void testMethodWithBrokenFileRefResponse() {
+        assertFalse(mockService.methodWithNonExistentFileResponse().exists());
+    }
 
     @Test
     void testMethodWithPlainText() {
@@ -58,6 +62,14 @@ public class TranslateWithEnabledAspectIT extends IsalinTestBase {
         String expected = "Maligayang pagdating sa kagubatan!";
 
         assertEquals(expected, mockService.methodWithTextWithinCustomObject().getBody().getContent());
+    }
+
+    @Test
+    void testMethodWithDocument() {
+        File translatedFile = mockService.methodWithDocumentResponse();
+
+        assertTrue(translatedFile.getName().startsWith("isalin"));
+        assertTrue(translatedFile.exists());
     }
 
     @Test
