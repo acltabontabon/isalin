@@ -1,7 +1,6 @@
 package com.acltabontabon.isalin.annotation;
 
 import com.acltabontabon.isalin.Language;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

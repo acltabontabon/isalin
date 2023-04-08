@@ -1,10 +1,9 @@
 package com.acltabontabon.isalin.mock;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
 import java.io.File;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 @Data
 public class MockPayload {
