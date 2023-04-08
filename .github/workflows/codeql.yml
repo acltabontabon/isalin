@@ -37,20 +37,14 @@ jobs:
       with:
         languages: ${{ matrix.language }}
       
-    - name: Setup Gradle
+    - name: Setup Gradle 7.6
       uses: gradle/gradle-build-action@v2
       with:
         gradle-version: 7.6
 
     - name: Build
       run: |
-        ./gradlew build --scan
-        
-    - name: Upload build reports
-      uses: actions/upload-artifact@v3
-      with:
-        name: build-reports
-        path: build/reports/
+        ./gradlew build 
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
