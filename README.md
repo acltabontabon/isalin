@@ -25,13 +25,13 @@ Isalin is a spring-boot library that aims to provide a less boilerplate and conv
 <dependency>
     <groupId>com.acltabontabon</groupId>
     <artifactId>isalin</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
 ##### Gradle
 ```
-implementation group: 'com.acltabontabon', name: 'isalin', version: '1.0.0'
+implementation group: 'com.acltabontabon', name: 'isalin', version: '1.0.1'
 ```
 
 ### Using `@Translate`
