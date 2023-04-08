@@ -18,7 +18,7 @@ Pull requests are the best way to propose changes to the codebase (we use [Githu
 6. Issue that pull request!
 
 ## Report bugs using Github's [issues](https://github.com/acltabontabon/isalin/issues)
-We use GitHub issues to track public bugs. Report a bug by [opening a new issue](); it's that easy!
+We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/acltabontabon/isalin/issues/new); it's that easy!
 
 ## License
 By contributing, you agree that your contributions will be licensed under its MIT License.
