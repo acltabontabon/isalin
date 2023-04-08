@@ -1,16 +1,15 @@
 package com.acltabontabon.isalin.mock;
 
+import static com.acltabontabon.isalin.mock.MockPayload.Body;
+
 import com.acltabontabon.isalin.Language;
 import com.acltabontabon.isalin.annotation.Translate;
+import java.io.File;
+import java.util.List;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-
-import java.io.File;
-import java.util.List;
-
-import static com.acltabontabon.isalin.mock.MockPayload.Body;
 
 @Service
 public class MockService {

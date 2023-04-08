@@ -1,17 +1,16 @@
 package com.acltabontabon.isalin.instrumentation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.acltabontabon.isalin.IsalinTestBase;
 import com.acltabontabon.isalin.mock.MockPayload;
 import com.acltabontabon.isalin.mock.MockService;
+import java.io.File;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
-
-import java.io.File;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestPropertySource(locations = "classpath:isalin-enabled.properties")
 public class TranslateWithEnabledAspectIT extends IsalinTestBase {

@@ -2,6 +2,10 @@ package com.acltabontabon.isalin.aspect;
 
 import com.acltabontabon.isalin.annotation.Translate;
 import com.acltabontabon.isalin.service.IsalinService;
+import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -14,11 +18,6 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.util.StringUtils;
-
-import java.io.File;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.List;
 
 /**
  * The aspect used to intercept the methods annotated by {@link Translate}.
@@ -66,6 +65,7 @@ public class TranslateAspect {
         return list.get(0) instanceof File;
     }
 
+    @SuppressWarnings("unchecked")
     private Object processList(List<?> joinPointResult, Translate translate) {
         if (containsText(joinPointResult)) {
             return isalinService.translateTexts((List<String>) joinPointResult, translate.from(), translate.to());
@@ -78,6 +78,7 @@ public class TranslateAspect {
         return joinPointResult;
     }
 
+    @SuppressWarnings("unchecked")
     private Object processCustomObject(Object joinPointResult, Translate translate) {
         if (!StringUtils.hasText(translate.value())) {
             return joinPointResult;
