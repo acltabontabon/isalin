@@ -38,7 +38,7 @@ jobs:
         languages: ${{ matrix.language }}
       
     - name: Setup Gradle 7.6
-      uses: gradle/gradle-build-action@v2
+      uses: gradle/gradle-build-action@v2.4.2
       with:
         gradle-version: 7.6
 
