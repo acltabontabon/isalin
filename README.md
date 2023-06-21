@@ -1,6 +1,6 @@
 # Isalin
 
-![isalin-version](https://img.shields.io/badge/version-1.0.1-blue)
+![isalin-version](https://img.shields.io/badge/version-1.0.2-blue)
 ![isalin-java-comp](https://img.shields.io/badge/java-17%2B-blue)
 ![isalin-spring-comp](https://img.shields.io/badge/spring--boot-3.x-blue)
 ![isalin-license](https://img.shields.io/github/license/acltabontabon/isalin)
