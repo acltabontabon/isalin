@@ -28,7 +28,7 @@ dependencies {
 	annotationProcessor 'org.springframework.boot:spring-boot-autoconfigure-processor'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
-	api 'com.google.cloud:google-cloud-translate:2.19.0'
+	api 'com.google.cloud:google-cloud-translate:2.30.0'
 	api 'org.springframework:spring-aspects'
 	api 'org.springframework.boot:spring-boot-autoconfigure'
 	api 'org.slf4j:slf4j-api'
